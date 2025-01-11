@@ -5,7 +5,7 @@ import ENV from "../../config/ENV.js";
 class GameController {
   static async createGame(req: Request, res: Response) {
     try {
-      const pokRes = await axios.get(`${ENV.POKE_API_URL}/pokemon?limit=1302`);
+      const pokRes = await axios.get(`${ENV.POKE_API_URL}/pokemon?limit=200`);
 
       const pokemons = pokRes?.data?.results;
 
@@ -45,6 +45,49 @@ class GameController {
       const options = selectedPokemons.flatMap((p) => p.abilities);
 
       return res.status(200).json({ question, options });
+    } catch (error) {
+      return res.status(500).json({ message: error.message });
+    }
+  }
+
+  static async submitGame(req: Request, res: Response) {
+    try {
+      const { gameId, answer, question } = req.body;
+
+      const getAnswerOfQuestion = await axios.get(
+        `${ENV.POKE_API_URL}/pokemon/${question.id}`
+      );
+      const correctAnswer = getAnswerOfQuestion?.data?.abilities?.map(
+        (a) => a?.ability?.name
+      );
+
+      const correct = [];
+      const wrong = [];
+
+      answer.forEach((ans) => {
+        if (correctAnswer.includes(ans)) {
+          correct.push(ans);
+        } else {
+          wrong.push(ans);
+        }
+      });
+
+      const selected = answer;
+      const score =
+        correct.length > 0
+          ? (correct?.length / correctAnswer?.length) * 100
+          : 0;
+
+      return res.status(200).json({
+        id: gameId,
+        correct,
+        wrong,
+        selected,
+        score,
+        question,
+        status: "completed",
+        answer: correctAnswer,
+      });
     } catch (error) {
       return res.status(500).json({ message: error.message });
     }

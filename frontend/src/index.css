@@ -27,10 +27,14 @@
     --font-montserrat: "Montserrat", sans-serif;
     --font-open-sans: "Open Sans", sans-serif;
     --font-poppins: "Poppins", sans-serif;
+
   }
+
 }
 
 #nprogress .bar {
-  background: #164675 !important; /* Change color */
-  height: 5px !important; /* Increase the height */
+  background: #164675 !important;
+  /* Change color */
+  height: 5px !important;
+  /* Increase the height */
 }
